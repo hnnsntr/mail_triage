@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 33% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --primary: 205 82% 39%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 20% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 20% 94%;
+  --muted-foreground: 215 16% 43%;
+  --accent: 176 38% 94%;
+  --accent-foreground: 180 48% 18%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 32% 88%;
+  --input: 214 32% 88%;
+  --ring: 205 82% 39%;
+}
+
+.dark {
+  --background: 220 23% 8%;
+  --foreground: 210 20% 96%;
+  --card: 220 18% 12%;
+  --card-foreground: 210 20% 96%;
+  --primary: 198 78% 52%;
+  --primary-foreground: 220 23% 8%;
+  --secondary: 219 18% 16%;
+  --secondary-foreground: 210 20% 96%;
+  --muted: 219 18% 16%;
+  --muted-foreground: 215 15% 70%;
+  --accent: 174 30% 18%;
+  --accent-foreground: 168 60% 86%;
+  --destructive: 0 67% 58%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 219 16% 22%;
+  --input: 219 16% 22%;
+  --ring: 198 78% 52%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(45, 125, 160, 0.12), transparent 28rem),
+    radial-gradient(circle at bottom right, rgba(15, 118, 110, 0.10), transparent 32rem),
+    hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: hsl(var(--primary) / 0.24);
+}
+
+.scrollbar-stable {
+  scrollbar-gutter: stable;
+}

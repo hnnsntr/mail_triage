@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String        @id @default(cuid())
+  email     String        @unique
+  settings  UserSettings?
+  accounts  MailAccount[]
+  todos     Todo[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model UserSettings {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  theme            String   @default("system")
+  language         String   @default("de")
+  openaiModel      String   @default("gpt-5.4-mini")
+  lastFolder       String   @default("Inbox")
+  lastCategory     String?
+  lastSearch       String?
+  syncIntervalSecs Int      @default(180)
+  customCategories Json?    @default("[]")
+  openAIKey        String?
+  todoistKey       String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MailAccount {
+  id                    String      @id @default(cuid())
+  userId                String
+  displayName           String
+  emailAddress          String
+  imapHost              String
+  imapPort              Int
+  imapSecurity          String
+  imapUsername          String
+  imapPasswordEncrypted String
+  smtpHost              String?
+  smtpPort              Int?
+  smtpSecurity          String?
+  smtpUsername          String?
+  smtpPasswordEncrypted String?
+  isEnabled             Boolean     @default(true)
+  lastSyncAt            DateTime?
+  lastSyncError         String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  user                  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emails                Email[]
+  syncStates            SyncState[]
+
+  @@index([userId])
+  @@unique([userId, emailAddress])
+}
+
+model SyncState {
+  id        String      @id @default(cuid())
+  accountId String
+  folder    String
+  uidValidity BigInt?
+  highestUid BigInt?
+  lastSeenUid BigInt?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  account   MailAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, folder])
+}
+
+model Email {
+  id                 String          @id @default(cuid())
+  accountId          String
+  externalMessageId  String
+  imapUid            BigInt?
+  threadId           String?
+  folder             String          @default("Inbox")
+  subject            String
+  fromName           String?
+  fromEmail          String
+  to                 String[]
+  cc                 String[]
+  date               DateTime
+  isRead             Boolean         @default(false)
+  readAt             DateTime?
+  hasAttachments     Boolean         @default(false)
+  attachmentMetadata Json            @default("[]")
+  plainTextBody      String
+  htmlBody           String?
+  snippet            String
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  account            MailAccount     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  analysis           EmailAnalysis?
+  todos              Todo[]
+
+  @@index([accountId, folder, date])
+  @@index([isRead])
+  @@unique([accountId, folder, externalMessageId])
+}
+
+model EmailAnalysis {
+  id               String   @id @default(cuid())
+  emailId          String   @unique
+  category         String
+  importanceScore  Int
+  urgencyScore     Int
+  summary          String
+  suggestedAction  String?
+  todoShouldCreate Boolean  @default(false)
+  todoTitle        String?
+  todoDueDate      DateTime?
+  todoReason       String?
+  confidence       Float
+  createdAt        DateTime @default(now())
+  email            Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@index([category])
+  @@index([importanceScore])
+  @@index([urgencyScore])
+}
+
+model Todo {
+  id            String    @id @default(cuid())
+  userId        String
+  emailId       String?
+  title         String
+  description   String?
+  dueDate       DateTime?
+  status        String    @default("open")
+  createdFromAi Boolean   @default(false)
+  todoistId     String?
+  todoistUrl    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email         Email?    @relation(fields: [emailId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@index([dueDate])
+}
