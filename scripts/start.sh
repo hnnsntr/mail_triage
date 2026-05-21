@@ -89,33 +89,6 @@ load_zshrc() {
   fi
 }
 
-ensure_openai_key() {
-  local env_key="${OPENAI_API_KEY:-}"
-  local file_key
-  file_key="$(env_value OPENAI_API_KEY)"
-
-  if [[ -n "$env_key" ]]; then
-    info "Using OPENAI_API_KEY from your shell environment."
-    return
-  fi
-
-  if [[ -n "$file_key" ]]; then
-    export OPENAI_API_KEY="$file_key"
-    info "Using OPENAI_API_KEY from .env."
-    return
-  fi
-
-  warn "OPENAI_API_KEY was not found in the shell or .env."
-  local pasted
-  pasted="$(ask "Paste OPENAI_API_KEY now, or press Enter to start without AI" "")"
-  if [[ -n "$pasted" ]]; then
-    export OPENAI_API_KEY="$pasted"
-    set_env_value OPENAI_API_KEY "$pasted"
-  else
-    warn "Starting without AI. The app will use fallback analysis until OPENAI_API_KEY is set."
-  fi
-}
-
 ensure_encryption_key() {
   local existing
   existing="$(env_value ENCRYPTION_KEY)"
@@ -239,7 +212,6 @@ start_app() {
 main() {
   load_zshrc
   ensure_env_file
-  ensure_openai_key
   ensure_encryption_key
   ensure_database_url
   ensure_dependencies

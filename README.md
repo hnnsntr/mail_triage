@@ -42,11 +42,12 @@ npm run bootstrap
 ```
 
 The bootstrap script will:
-1. Load `OPENAI_API_KEY` from your shell environment (or prompt you)
-2. Generate an `ENCRYPTION_KEY` for credential storage
-3. Spin up a Docker PostgreSQL container (if Docker is available)
-4. Run Prisma migrations
-5. Start the dev server at `http://localhost:3000`
+1. Generate an `ENCRYPTION_KEY` for credential storage
+2. Spin up a Docker PostgreSQL container (if Docker is available)
+3. Run Prisma migrations
+4. Start the dev server at `http://localhost:3000`
+
+*(You can enter your OpenAI API key and Todoist key directly in the Settings tab of the application after startup.)*
 
 ### Setup Only (no dev server)
 
