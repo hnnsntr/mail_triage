@@ -467,6 +467,36 @@ export default function Home() {
 
   const excludedCategoryNames = useMemo(() => activeCustomCategories.filter(c => c.excludeFromInbox).map(c => c.name), [activeCustomCategories]);
 
+  const headerInfo = useMemo(() => {
+    if (view === "inbox") {
+      return {
+        eyebrow: c.inboxEyebrow,
+        title: c.priorityMail
+      };
+    }
+    if (view === "todos") {
+      return {
+        eyebrow: language === "de" ? "Aufgaben" : "Tasks",
+        title: language === "de" ? "Deine Todos" : "Your Todos"
+      };
+    }
+    if (view === "accounts") {
+      return {
+        eyebrow: "E-Mail",
+        title: language === "de" ? "E-Mail-Konten" : "Email Accounts"
+      };
+    }
+    
+    // AI Category Folders
+    const customCat = activeCustomCategories.find(cc => cc.name === view);
+    const categoryTitle = categoryLabels[language][view] ?? formatCategory(view);
+    return {
+      eyebrow: language === "de" ? "KI-Ordner" : "AI Folder",
+      title: categoryTitle
+    };
+  }, [view, language, activeCustomCategories, c.inboxEyebrow, c.priorityMail]);
+
+
   async function refreshData(nextView = view, nextExcluded = excludedCategoryNames) {
     setError(null);
     const params = mailQueryForView(nextView, nextExcluded);
@@ -710,8 +740,8 @@ export default function Home() {
             <header className="border-b border-border bg-card/65 p-4">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">{c.inboxEyebrow}</p>
-                  <h2 className="text-2xl font-semibold">{c.priorityMail}</h2>
+                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">{headerInfo.eyebrow}</p>
+                  <h2 className="text-2xl font-semibold">{headerInfo.title}</h2>
                 </div>
                 <div className="flex gap-2">
                   <Button size="icon" onClick={() => persistTheme(theme === "dark" ? "light" : "dark")} title={c.toggleTheme}>
